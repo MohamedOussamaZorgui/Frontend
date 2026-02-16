@@ -21,6 +21,7 @@ const Dashboard = () => {
         password: '',
         role_id: '3'
     });
+    const [formErrors, setFormErrors] = useState({});
 
     const roles = [
         { id: '1', name: 'Administrateur' },
@@ -43,6 +44,45 @@ const Dashboard = () => {
         setCurrentUser(user);
         fetchUsers(token);
     }, [navigate]);
+
+    /**
+     * Validation des champs en temps réel
+     */
+    const validateField = (name, value) => {
+        let error = '';
+
+        switch (name) {
+            case 'fullName':
+                if (value.trim().length < 3) {
+                    error = 'Le nom doit contenir au moins 3 caractères';
+                }
+                break;
+            case 'email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    error = 'Email invalide';
+                }
+                break;
+            case 'password':
+                if (!editMode && value.length < 6) {
+                    error = 'Le mot de passe doit contenir au moins 6 caractères';
+                }
+                break;
+            default:
+                break;
+        }
+
+        setFormErrors(prev => ({ ...prev, [name]: error }));
+        return error === '';
+    };
+
+    /**
+     * Gestion du changement de champ avec validation
+     */
+    const handleFieldChange = (name, value) => {
+        setFormData({ ...formData, [name]: value });
+        validateField(name, value);
+    };
 
     /**
      * Récupère la liste des utilisateurs depuis le backend
@@ -85,6 +125,7 @@ const Dashboard = () => {
     const openCreateModal = () => {
         setEditMode(false);
         setFormData({ id: null, fullName: '', email: '', password: '', role_id: '3' });
+        setFormErrors({});
         setShowModal(true);
     };
 
@@ -100,6 +141,7 @@ const Dashboard = () => {
             password: '',
             role_id: String(roles.find(r => r.name === user.role)?.id || '3')
         });
+        setFormErrors({});
         setShowModal(true);
     };
 
@@ -108,6 +150,17 @@ const Dashboard = () => {
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validation complète avant soumission
+        const isFullNameValid = validateField('fullName', formData.fullName);
+        const isEmailValid = validateField('email', formData.email);
+        const isPasswordValid = editMode || validateField('password', formData.password);
+
+        if (!isFullNameValid || !isEmailValid || !isPasswordValid) {
+            toast.error("Veuillez corriger les erreurs dans le formulaire.");
+            return;
+        }
+
         const token = localStorage.getItem('token');
 
         try {
@@ -261,37 +314,46 @@ const Dashboard = () => {
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label>Nom Complet</label>
+                                <label>Nom Complet *</label>
                                 <input
                                     type="text"
                                     value={formData.fullName}
-                                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                    onChange={(e) => handleFieldChange('fullName', e.target.value)}
+                                    onBlur={(e) => validateField('fullName', e.target.value)}
+                                    className={formErrors.fullName ? 'input-error' : ''}
                                     required
                                 />
+                                {formErrors.fullName && <span className="field-error">{formErrors.fullName}</span>}
                             </div>
                             <div className="form-group">
-                                <label>Email</label>
+                                <label>Email *</label>
                                 <input
                                     type="email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    onChange={(e) => handleFieldChange('email', e.target.value)}
+                                    onBlur={(e) => validateField('email', e.target.value)}
+                                    className={formErrors.email ? 'input-error' : ''}
                                     required
                                 />
+                                {formErrors.email && <span className="field-error">{formErrors.email}</span>}
                             </div>
                             {!editMode && (
                                 <div className="form-group">
-                                    <label>Mot de passe</label>
+                                    <label>Mot de passe *</label>
                                     <input
                                         type="password"
                                         value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        onChange={(e) => handleFieldChange('password', e.target.value)}
+                                        onBlur={(e) => validateField('password', e.target.value)}
+                                        className={formErrors.password ? 'input-error' : ''}
                                         required={!editMode}
                                         placeholder="Minimum 6 caractères"
                                     />
+                                    {formErrors.password && <span className="field-error">{formErrors.password}</span>}
                                 </div>
                             )}
                             <div className="form-group">
-                                <label>Rôle</label>
+                                <label>Rôle *</label>
                                 <select
                                     value={formData.role_id}
                                     onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}

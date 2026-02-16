@@ -19,6 +19,7 @@ const Register = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [formErrors, setFormErrors] = useState({});
 
     // Liste des rôles disponibles pour la sélection
     const roles = [
@@ -28,10 +29,60 @@ const Register = () => {
         { id: '4', name: 'Responsable' }
     ];
 
+    /**
+     * Validation des champs en temps réel
+     */
+    const validateField = (name, value) => {
+        let error = '';
+
+        switch (name) {
+            case 'fullName':
+                if (value.trim().length < 3) {
+                    error = 'Le nom doit contenir au moins 3 caractères';
+                }
+                break;
+            case 'email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    error = 'Email invalide';
+                }
+                break;
+            case 'password':
+                if (value.length < 6) {
+                    error = 'Le mot de passe doit contenir au moins 6 caractères';
+                }
+                break;
+            default:
+                break;
+        }
+
+        setFormErrors(prev => ({ ...prev, [name]: error }));
+        return error === '';
+    };
+
+    /**
+     * Gestion du changement de champ avec validation
+     */
+    const handleFieldChange = (name, value) => {
+        setFormData({ ...formData, [name]: value });
+        validateField(name, value);
+    };
+
     // Gestion de la création de compte
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validation complète avant soumission
+        const isFullNameValid = validateField('fullName', formData.fullName);
+        const isEmailValid = validateField('email', formData.email);
+        const isPasswordValid = validateField('password', formData.password);
+
+        if (!isFullNameValid || !isEmailValid || !isPasswordValid) {
+            toast.error("Veuillez corriger les erreurs dans le formulaire.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -63,36 +114,45 @@ const Register = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label><User size={18} /> Nom Complet</label>
+                        <label><User size={18} /> Nom Complet *</label>
                         <input
                             type="text"
                             placeholder="Jean Dupont"
                             value={formData.fullName}
-                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                            onChange={(e) => handleFieldChange('fullName', e.target.value)}
+                            onBlur={(e) => validateField('fullName', e.target.value)}
+                            className={formErrors.fullName ? 'input-error' : ''}
                             required
                         />
+                        {formErrors.fullName && <span className="field-error">{formErrors.fullName}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label><Mail size={18} /> Email</label>
+                        <label><Mail size={18} /> Email *</label>
                         <input
                             type="email"
                             placeholder="jean@exemple.com"
                             value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            onChange={(e) => handleFieldChange('email', e.target.value)}
+                            onBlur={(e) => validateField('email', e.target.value)}
+                            className={formErrors.email ? 'input-error' : ''}
                             required
                         />
+                        {formErrors.email && <span className="field-error">{formErrors.email}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label><Lock size={18} /> Mot de passe (min 6 car.)</label>
+                        <label><Lock size={18} /> Mot de passe (min 6 car.) *</label>
                         <input
                             type="password"
                             placeholder="••••••••"
                             value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            onChange={(e) => handleFieldChange('password', e.target.value)}
+                            onBlur={(e) => validateField('password', e.target.value)}
+                            className={formErrors.password ? 'input-error' : ''}
                             required
                         />
+                        {formErrors.password && <span className="field-error">{formErrors.password}</span>}
                     </div>
 
                     <div className="form-group">

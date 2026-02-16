@@ -15,11 +15,43 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [formErrors, setFormErrors] = useState({});
+
+    /**
+     * Validation des champs
+     */
+    const validateField = (name, value) => {
+        let error = '';
+
+        if (name === 'email') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                error = 'Email invalide';
+            }
+        } else if (name === 'password') {
+            if (value.length === 0) {
+                error = 'Le mot de passe est requis';
+            }
+        }
+
+        setFormErrors(prev => ({ ...prev, [name]: error }));
+        return error === '';
+    };
 
     // Gestion de la soumission du formulaire
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validation avant soumission
+        const isEmailValid = validateField('email', email);
+        const isPasswordValid = validateField('password', password);
+
+        if (!isEmailValid || !isPasswordValid) {
+            toast.error("Veuillez corriger les erreurs dans le formulaire.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -76,8 +108,11 @@ const Login = () => {
                             placeholder="exemple@medical.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onBlur={(e) => validateField('email', e.target.value)}
+                            className={formErrors.email ? 'input-error' : ''}
                             required
                         />
+                        {formErrors.email && <span className="field-error">{formErrors.email}</span>}
                     </div>
 
                     <div className="form-group">
@@ -87,8 +122,11 @@ const Login = () => {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            onBlur={(e) => validateField('password', e.target.value)}
+                            className={formErrors.password ? 'input-error' : ''}
                             required
                         />
+                        {formErrors.password && <span className="field-error">{formErrors.password}</span>}
                     </div>
 
                     <button type="submit" className="btn-primary" disabled={loading}>

@@ -495,3 +495,21 @@ tr:hover td {
   background: white;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
 }
+
+/* Validation Errors */
+.input-error {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.field-error {
+  display: block;
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+.form-group input.input-error:focus {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+}
