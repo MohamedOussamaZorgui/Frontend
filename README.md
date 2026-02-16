@@ -1,16 +1,63 @@
-# React + Vite
+# 💻 MedManager - Frontend App (React/Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Une interface moderne, réactive et élégante pour la gestion des données médicales.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎨 Design & Expérience Utilisateur
 
-## React Compiler
+L'interface a été conçue pour être **ultra-moderne** :
+-   **Design System** : Utilisation de la police *Outfit* et d'une palette de couleurs harmonieuse.
+-   **Aesthetics** : Effets de *Glassmorphism*, ombres subtiles et micro-animations.
+-   **Notifications** : Intégration de `react-hot-toast` pour des retours utilisateurs élégants.
+-   **Icons** : Utilisation de la bibliothèque `lucide-react`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🏗️ Architecture du Frontend
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+-   **`src/pages/`** : Pages principales de l'application (Login, Register, Dashboard).
+-   **`src/assets/`** : Ressources statiques (images, logo).
+-   **`src/App.jsx`** : Gestion centrale du routage avec `react-router-dom`.
+-   **`src/index.css`** : Design system global et variables CSS.
+
+---
+
+## 🔑 Comptes de Test
+
+| Rôle | Email | Mot de passe |
+| :--- | :--- | :--- |
+| **Administrateur** | `admin@medmanager.com` | `admin123` |
+| **Patient** | `patient@test.com` | `password123` |
+
+---
+
+## ⚙️ Installation
+
+1. Accédez au dossier :
+   ```bash
+   cd Frontend
+   ```
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+
+---
+
+## 🏃 Lancement
+
+```bash
+# Démarrer le serveur de développement (Vite)
+npm run dev
+```
+L'application sera accessible sur `http://localhost:5173`.
+
+---
+
+## 🔒 Routes Protégées
+
+Le frontend gère la sécurité de manière intelligente :
+-   Vérification de la présence du **Token JWT** avant d'accéder au Dashboard.
+-   Redirection automatique vers `/login` si l'utilisateur n'est pas authentifié.
+-   Affichage conditionnel des boutons d'action (Suppression/Statut) basé sur le rôle stocké dans le profil.
