@@ -39,8 +39,17 @@ const Login = () => {
             // Redirection vers le dashboard après un court délai
             setTimeout(() => navigate('/dashboard'), 1000);
         } catch (err) {
-            setError(err.response?.data?.message || "Email ou mot de passe incorrect.");
-            toast.error("Échec de la connexion.");
+            const status = err.response?.status;
+            const message = err.response?.data?.message || "Erreur de connexion.";
+
+            if (status === 400) {
+                toast.error("Identifiants incorrects. Veuillez vérifier votre email et mot de passe.");
+            } else if (status === 403) {
+                toast.error("Compte inactif. Veuillez contacter un administrateur.");
+            } else {
+                toast.error(message);
+            }
+            setError(message);
         } finally {
             setLoading(false);
         }

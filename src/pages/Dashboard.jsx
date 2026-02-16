@@ -39,8 +39,16 @@ const Dashboard = () => {
             setUsers(res.data);
         } catch (err) {
             console.error("Erreur fetch users:", err);
-            toast.error("Session expirée ou accès refusé.");
-            navigate('/login');
+            const status = err.response?.status;
+
+            if (status === 403) {
+                toast.error("Accès refusé : Vous n'avez pas les permissions nécessaires (Admin/Responsable requis).");
+            } else if (status === 401) {
+                toast.error("Session expirée. Veuillez vous reconnecter.");
+                navigate('/login');
+            } else {
+                toast.error("Une erreur est survenue lors de la récupération des utilisateurs.");
+            }
         } finally {
             setLoading(false);
         }

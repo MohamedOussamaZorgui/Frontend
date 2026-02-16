@@ -42,8 +42,9 @@ const Register = () => {
             // Redirection vers la page de login
             setTimeout(() => navigate('/login'), 1500);
         } catch (err) {
-            // Gestion fine des messages d'erreur backend
-            setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || "Une erreur est survenue lors de l'inscription.");
+            const message = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || "Une erreur est survenue lors de l'inscription.";
+            toast.error(message);
+            setError(message);
         } finally {
             setLoading(false);
         }
