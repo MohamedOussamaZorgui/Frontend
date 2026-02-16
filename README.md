@@ -23,6 +23,15 @@ L'interface a été conçue pour être **ultra-moderne** :
 
 ---
 
+## 🔑 Comptes de Test
+
+| Rôle | Email | Mot de passe |
+| :--- | :--- | :--- |
+| **Administrateur** | `admin@medmanager.com` | `admin123` |
+| **Patient** | `patient@test.com` | `password123` |
+
+---
+
 ## ⚙️ Installation
 
 1. Accédez au dossier :
